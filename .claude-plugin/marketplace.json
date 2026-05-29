@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "procrastivity",
+  "owner": { "name": "procrastivity", "url": "https://github.com/procrastivity" },
+  "plugins": [
+    {
+      "name": "direnv-session-loader",
+      "source": { "source": "github", "repo": "procrastivity/direnv-session-loader" },
+      "description": "Loads the project's direnv .envrc at session start (worktree-aware)."
+    }
+  ]
+}
