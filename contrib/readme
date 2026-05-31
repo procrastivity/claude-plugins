@@ -55,8 +55,16 @@ fi
 # --- Read the marketplace manifest ---
 
 MARKET_NAME=$(jq -r '.name' "$MARKETPLACE")
-OWNER_URL=$(jq -r '.owner.url // empty' "$MARKETPLACE")
 PLUGIN_COUNT=$(jq '.plugins | length' "$MARKETPLACE")
+
+# The GitHub path users add as a marketplace ('owner/repo') is this repo's slug,
+# which is independent of the marketplace 'name'. Derive it (works locally and in
+# CI) rather than hardcoding, so a fork or rename stays correct.
+MARKET_REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || echo "${GITHUB_REPOSITORY:-}")
+if [[ -z "$MARKET_REPO" ]]; then
+  echo "error: could not determine this repository's owner/name ('gh repo view' failed and GITHUB_REPOSITORY is unset)." >&2
+  exit 1
+fi
 
 # Working copy of the marketplace JSON; we apply synced descriptions to it and
 # only persist (or diff) at the end.
@@ -110,6 +118,15 @@ fi
 
 # --- Render the README ---
 
+# Escape a value for use inside a Markdown table cell: collapse newlines to
+# spaces and escape pipes so upstream text can't break the column layout.
+md_cell() {
+  local s=$1
+  s=${s//$'\n'/ }
+  s=${s//|/\\|}
+  printf '%s' "$s"
+}
+
 render_readme() {
   cat <<EOF
 # ${MARKET_NAME}
@@ -121,7 +138,7 @@ A [Claude Code](https://docs.claude.com/en/docs/claude-code) plugin marketplace.
 Add this marketplace to Claude Code, then install any plugin from the list below:
 
 \`\`\`
-/plugin marketplace add ${MARKET_NAME}/claude-plugins
+/plugin marketplace add ${MARKET_REPO}
 /plugin install <plugin-name>@${MARKET_NAME}
 \`\`\`
 
@@ -138,7 +155,7 @@ EOF
     local version="${ROW_VERSION[i]}"
     local repo="${ROW_REPO[i]}"
     printf '| [%s](https://github.com/%s) | %s | %s |\n' \
-      "$display" "$repo" "$desc" "${version:+v$version}"
+      "$(md_cell "$display")" "$repo" "$(md_cell "$desc")" "${version:+v$version}"
   done
 
   cat <<EOF
@@ -172,7 +189,10 @@ if [[ "$CHECK" -eq 1 ]]; then
     cat /tmp/.readme-mp.diff >&2
     stale=1
   fi
-  if [[ ! -f "$README" ]] || ! diff -u "$README" <(printf '%s\n' "$new_readme") >/tmp/.readme-rm.diff 2>/dev/null; then
+  if [[ ! -f "$README" ]]; then
+    echo "error: ${README} does not exist; run 'contrib/readme' to generate it." >&2
+    stale=1
+  elif ! diff -u "$README" <(printf '%s\n' "$new_readme") >/tmp/.readme-rm.diff 2>/dev/null; then
     echo "error: ${README} is out of date:" >&2
     cat /tmp/.readme-rm.diff >&2
     stale=1
