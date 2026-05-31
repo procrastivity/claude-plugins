@@ -1,0 +1,47 @@
+name: Update README
+
+# Regenerates README.md and syncs marketplace.json descriptions from each
+# plugin's canonical .claude-plugin/plugin.json, then opens a PR if anything
+# changed. Triggers:
+#   - schedule:            weekly safety net (catches plugin releases we missed)
+#   - workflow_dispatch:   manual "Run workflow" button
+#   - repository_dispatch: a plugin repo pings us on release (event_type: plugin-released)
+on:
+  schedule:
+    - cron: "0 7 * * 1" # Mondays 07:00 UTC
+  workflow_dispatch:
+  repository_dispatch:
+    types: [plugin-released]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # jq and gh are preinstalled on ubuntu-latest runners. The contrib/readme
+      # script uses 'gh api' to read each plugin's public plugin.json; the
+      # default GITHUB_TOKEN is sufficient for reading public repos.
+      - name: Regenerate README and sync marketplace
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./contrib/readme
+
+      - name: Open PR if anything changed
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore: update README and marketplace metadata"
+          title: "chore: update README and marketplace metadata"
+          body: |
+            Automated update from `contrib/readme`.
+
+            Regenerates `README.md` and syncs `.claude-plugin/marketplace.json`
+            descriptions from each plugin's canonical `.claude-plugin/plugin.json`.
+
+            Triggered by: `${{ github.event_name }}`
+          branch: automation/update-readme
+          delete-branch: true
