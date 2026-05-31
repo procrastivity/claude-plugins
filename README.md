@@ -4,11 +4,32 @@ A [Claude Code](https://docs.claude.com/en/docs/claude-code) plugin marketplace.
 
 ## Installation
 
-Add this marketplace to Claude Code, then install any plugin from the list below:
+Add this marketplace to Claude Code, then install any plugin from the list below.
+
+From within Claude Code:
 
 ```
 /plugin marketplace add procrastivity/claude-plugins
-/plugin install <plugin-name>@procrastivity
+```
+
+Or from the command line:
+
+```
+claude plugin marketplace add procrastivity/claude-plugins
+```
+
+To pull in newly added or updated plugins later, refresh the marketplace.
+
+From within Claude Code:
+
+```
+/plugin marketplace update procrastivity
+```
+
+Or from the command line:
+
+```
+claude plugin marketplace update procrastivity
 ```
 
 ## Plugins

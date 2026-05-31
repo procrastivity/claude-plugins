@@ -135,11 +135,32 @@ A [Claude Code](https://docs.claude.com/en/docs/claude-code) plugin marketplace.
 
 ## Installation
 
-Add this marketplace to Claude Code, then install any plugin from the list below:
+Add this marketplace to Claude Code, then install any plugin from the list below.
+
+From within Claude Code:
 
 \`\`\`
 /plugin marketplace add ${MARKET_REPO}
-/plugin install <plugin-name>@${MARKET_NAME}
+\`\`\`
+
+Or from the command line:
+
+\`\`\`
+claude plugin marketplace add ${MARKET_REPO}
+\`\`\`
+
+To pull in newly added or updated plugins later, refresh the marketplace.
+
+From within Claude Code:
+
+\`\`\`
+/plugin marketplace update ${MARKET_NAME}
+\`\`\`
+
+Or from the command line:
+
+\`\`\`
+claude plugin marketplace update ${MARKET_NAME}
 \`\`\`
 
 ## Plugins
