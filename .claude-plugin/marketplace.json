@@ -7,6 +7,14 @@
   },
   "plugins": [
     {
+      "name": "clast",
+      "source": {
+        "source": "github",
+        "repo": "procrastivity/clast"
+      },
+      "description": "Capture, curate, and surface Claude Code session history across all your projects."
+    },
+    {
       "name": "direnv-session-loader",
       "source": {
         "source": "github",
