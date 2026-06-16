@@ -21,7 +21,7 @@
         "repo": "procrastivity/direnv-session-loader"
       },
       "description": "Loads the project's direnv .envrc at session start (worktree-aware) so Claude Code's non-interactive Bash tool inherits the environment."
-    },
+     },
     {
       "name": "prtend",
       "source": {
@@ -29,6 +29,14 @@
         "repo": "procrastivity/prtend"
       },
       "description": "Tend your PR while you pretend you're actually still there."
+    },
+    {
+      "name": "wip",
+      "source": {
+        "source": "github",
+        "repo": "procrastivity/wip"
+      },
+      "description": ""
     }
   ]
 }
